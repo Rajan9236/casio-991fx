@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scientific Calculator App</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #e0e0e0;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .calculator {
+            background-color: #1f1f1f;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 20px #ffd700, 0 0 40px #ffd700; /* Golden neon glow for calculator border */
+            width: 450px; /* 10% smaller */
+        }
+        .display-container {
+            background-color: #000; /* Black background for display */
+            border: 3px solid #000;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            overflow: hidden;
+            box-shadow: 0 0 15px #ffd700, 0 0 30px #ffd700; /* Golden neon glow for display border */
+        }
+        .display {
+            font-size: 32px;
+            font-family: 'Courier New', monospace;
+            color: #fff; /* White text for visibility on black background */
+            text-align: right;
+            width: 100%;
+            overflow-x: auto;
+            white-space: nowrap;
+            line-height: 1;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+        }
+        button {
+            padding: 13.5px; /* 10% smaller */
+            font-size: 14.4px; /* 10% smaller */
+            border: none;
+            border-radius: 5px;
+            background-color: #4a4a4a; /* Default background */
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            box-shadow: 0 0 5px #ffd700, 0 0 10px #ffd700; /* Golden neon glow for button borders */
+        }
+        button:hover {
+            background-color: #5a5a5a;
+        }
+        .function {
+            background-color: #3a3a3a;
+            padding: 9px; /* 10% smaller */
+            font-size: 12.6px; /* 10% smaller */
+        }
+        .function:hover {
+            background-color: #4a4a4a;
+        }
+        .number {
+            background-color: #5c5c5c;
+        }
+        .number:hover {
+            background-color: #6c6c6c;
+        }
+        .operator {
+            background-color: #6c6c6c;
+        }
+        .operator:hover {
+            background-color: #7c7c7c;
+        }
+        .memory {
+            background-color: #2a2a2a;
+        }
+        .memory:hover {
+            background-color: #3a3a3a;
+        }
+        .equals {
+            background-color: #ff8c00;
+        }
+        .equals:hover {
+            background-color: #ffa500;
+        }
+        .clear {
+            background-color: #ff4040;
+        }
+        .clear:hover {
+            background-color: #ff6060;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div class="display-container">
+            <div class="display" id="display">0</div>
+        </div>
+        <div class="buttons">
+            <!-- Row 1: Utility Keys -->
+            <button class="function" onclick="turnOn()">ON</button>
+            <button class="clear" onclick="clearMemory()">CLR</button>
+            <button class="function" onclick="setShift()">SHIFT</button>
+            <button class="function" onclick="setAlpha()">ALPHA</button>
+            <button class="function" onclick="setMode()">MODE</button>
+
+            <!-- Row 2: Trigonometric and Hyperbolic -->
+            <button class="function" onclick="applyFunction('sin')">sin</button>
+            <button class="function" onclick="applyFunction('cos')">cos</button>
+            <button class="function" onclick="applyFunction('tan')">tan</button>
+            <button class="function" onclick="setHyp()">hyp</button>
+            <button class="function" onclick="toggleAngleMode()">DRG></button>
+
+            <!-- Row 3: Inverse Trigonometric -->
+            <button class="function" onclick="applyFunction('asin')">sin⁻¹</button>
+            <button class="function" onclick="applyFunction('acos')">cos⁻¹</button>
+            <button class="function" onclick="applyFunction('atan')">tan⁻¹</button>
+            <button class="function" onclick="applyFunction('Pol')">Pol(</button>
+            <button class="function" onclick="applyFunction('Rec')">Rec(</button>
+
+            <!-- Row 4: Advanced Math Functions -->
+            <button class="function" onclick="applyFunction('factorial')">x!</button>
+            <button class="function" onclick="applyFunction('nPr')">nPr</button>
+            <button class="function" onclick="applyFunction('nCr')">nCr</button>
+            <button class="function" onclick="applyFunction('square')">x²</button>
+            <button class="function" onclick="applyFunction('cube')">x³</button>
+
+            <!-- Row 5: More Math Functions -->
+            <button class="function" onclick="applyFunction('sqrt')">√</button>
+            <button class="function" onclick="applyFunction('log')">log</button>
+            <button class="function" onclick="applyFunction('ln')">ln</button>
+            <button class="function" onclick="applyFunction('tenPower')">10ˣ</button>
+            <button class="function" onclick="applyFunction('ePower')">eˣ</button>
+
+            <!-- Row 6: Constants and Extras -->
+            <button class="function" onclick="appendConstant('π')">π</button>
+            <button class="function" onclick="appendToDisplay('E')">EXP</button>
+            <button class="function" onclick="applyFunction('percent')">%</button>
+            <button class="function" onclick="applyFunction('eng')">ENG</button>
+            <button class="function" onclick="applyFunction('rnd')">Rnd</button>
+
+            <!-- Row 7: Parentheses and Separators -->
+            <button class="operator" onclick="appendToDisplay('(')">(</button>
+            <button class="operator" onclick="appendToDisplay(')')">)</button>
+            <button class="operator" onclick="appendToDisplay(';')">;</button>
+            <button class="operator" onclick="appendToDisplay(',')">,</button>
+            <button class="function" onclick="applyFunction('ran')">Ran#</button>
+
+            <!-- Row 8: Numbers and Operators (7-9) -->
+            <button class="number" onclick="appendToDisplay('7')">7</button>
+            <button class="number" onclick="appendToDisplay('8')">8</button>
+            <button class="number" onclick="appendToDisplay('9')">9</button>
+            <button class="operator" onclick="appendToDisplay('÷')">÷</button>
+            <button class="operator" onclick="appendToDisplay('×')">×</button>
+
+            <!-- Row 9: Numbers and Operators (4-6) -->
+            <button class="number" onclick="appendToDisplay('4')">4</button>
+            <button class="number" onclick="appendToDisplay('5')">5</button>
+            <button class="number" onclick="appendToDisplay('6')">6</button>
+            <button class="operator" onclick="appendToDisplay('+')">+</button>
+            <button class="operator" onclick="appendToDisplay('-')">-</button>
+
+            <!-- Row 10: Numbers and Operators (1-3) -->
+            <button class="number" onclick="appendToDisplay('1')">1</button>
+            <button class="number" onclick="appendToDisplay('2')">2</button>
+            <button class="number" onclick="appendToDisplay('3')">3</button>
+            <button class="clear" onclick="allClear()">AC</button>
+            <button class="clear" onclick="deleteLast()">DEL</button>
+
+            <!-- Row 11: Bottom Row (0, Decimal, etc.) -->
+            <button class="number" onclick="appendToDisplay('0')">0</button>
+            <button class="number" onclick="appendToDisplay('.')">.</button>
+            <button class="memory" onclick="appendToDisplay('Ans')">Ans</button>
+            <button class="memory" onclick="memoryAdd()">M+</button>
+            <button class="memory" onclick="memorySubtract()">M-</button>
+
+            <!-- Row 12: Memory and Stats -->
+            <button class="memory" onclick="storeVariable()">STO</button>
+            <button class="memory" onclick="recallVariable()">RCL</button>
+            <button class="function" onclick="applyFunction('sSum')">S-SUM</button>
+            <button class="function" onclick="applyFunction('sVar')">S-VAR</button>
+            <button class="equals" onclick="calculate()">=</button>
+        </div>
+    </div>
+
+    <script>
+        let display = document.getElementById('display');
+        let currentExpression = '';
+        let memory = 0;
+        let lastResult = 0;
+        let isShift = false;
+        let isAlpha = false;
+        let isHyp = false;
+        let angleMode = 'DEG'; // DEG or RAD
+        let dataSet = [];
+
+        function appendToDisplay(value) {
+            if (display.innerText === '0' || display.innerText === 'Error') {
+                display.innerText = value;
+                currentExpression = value;
+            } else if (value === 'Ans') {
+                display.innerText += 'Ans';
+                currentExpression += lastResult;
+            } else {
+                display.innerText += value;
+                currentExpression += value;
+            }
+            display.scrollLeft = display.scrollWidth;
+        }
+
+        function appendConstant(value) {
+            if (display.innerText === '0' || display.innerText === 'Error') {
+                display.innerText = value;
+            } else {
+                display.innerText += value;
+            }
+            currentExpression += value === 'π' ? Math.PI : value;
+            display.scrollLeft = display.scrollWidth;
+        }
+
+        function allClear() {
+            display.innerText = '0';
+            currentExpression = '';
+            memory = 0;
+            dataSet = [];
+        }
+
+        function clearMemory() {
+            memory = 0;
+            dataSet = [];
+            display.innerText = 'Memory Cleared';
+            setTimeout(() => { display.innerText = '0'; }, 1000);
+        }
+
+        function deleteLast() {
+            if (display.innerText.length > 1) {
+                display.innerText = display.innerText.slice(0, -1);
+                currentExpression = currentExpression.slice(0, -1);
+            } else {
+                display.innerText = '0';
+                currentExpression = '';
+            }
+        }
+
+        function setShift() {
+            isShift = !isShift;
+            display.innerText = isShift ? 'SHIFT ON' : 'SHIFT OFF';
+            setTimeout(() => { display.innerText = currentExpression || '0'; }, 1000);
+        }
+
+        function setAlpha() {
+            isAlpha = !isAlpha;
+            display.innerText = isAlpha ? 'ALPHA ON' : 'ALPHA OFF';
+            setTimeout(() => { display.innerText = currentExpression || '0'; }, 1000);
+        }
+
+        function setHyp() {
+            isHyp = !isHyp;
+            display.innerText = isHyp ? 'HYP ON' : 'HYP OFF';
+            setTimeout(() => { display.innerText = currentExpression || '0'; }, 1000);
+        }
+
+        function setMode() {
+            display.innerText = 'MODE SET';
+            setTimeout(() => { display.innerText = currentExpression || '0'; }, 1000);
+        }
+
+        function turnOn() {
+            display.innerText = '0';
+            currentExpression = '';
+        }
+
+        function toggleAngleMode() {
+            angleMode = angleMode === 'DEG' ? 'RAD' : 'DEG';
+            display.innerText = `Angle Mode: ${angleMode}`;
+            setTimeout(() => { display.innerText = currentExpression || '0'; }, 1000);
+        }
+
+        function toRadians(degrees) {
+            return degrees * (Math.PI / 180);
+        }
+
+        function applyFunction(func) {
+            let value;
+            try {
+                value = parseFloat(eval(currentExpression.replace(/×/g, '*').replace(/÷/g, '/').replace(/√/g, 'Math.sqrt'))) || 0;
+            } catch {
+                value = 0;
+            }
+            let result;
+
+            switch (func) {
+                case 'factorial':
+                    result = factorial(value);
+                    break;
+                case 'nPr':
+                    let r = prompt('Enter r for nPr:');
+                    result = permutation(value, parseInt(r));
+                    break;
+                case 'nCr':
+                    r = prompt('Enter r for nCr:');
+                    result = combination(value, parseInt(r));
+                    break;
+                case 'Pol':
+                    let y = prompt('Enter y for Pol(x,y):');
+                    let polar = toPolar(value, parseFloat(y));
+                    result = `r=${polar.r}, θ=${polar.theta}`;
+                    break;
+                case 'Rec':
+                    let theta = prompt('Enter θ for Rec(r,θ):');
+                    let rect = toRectangular(value, parseFloat(theta));
+                    result = `x=${rect.x}, y=${rect.y}`;
+                    break;
+                case 'square':
+                    result = value * value;
+                    break;
+                case 'cube':
+                    result = value * value * value;
+                    break;
+                case 'sqrt':
+                    if (display.innerText === '0') {
+                        display.innerText = '√';
+                        currentExpression = 'Math.sqrt(';
+                    } else {
+                        display.innerText = '√(' + display.innerText + ')';
+                        currentExpression = 'Math.sqrt(' + currentExpression + ')';
+                    }
+                    return;
+                case 'tenPower':
+                    result = Math.pow(10, value);
+                    break;
+                case 'ePower':
+                    result = Math.exp(value);
+                    break;
+                case 'ln':
+                    result = Math.log(value);
+                    break;
+                case 'log':
+                    result = Math.log10(value);
+                    break;
+                case 'sin':
+                    if (isHyp) {
+                        result = Math.sinh(angleMode === 'DEG' ? toRadians(value) : value);
+                    } else {
+                        result = Math.sin(angleMode === 'DEG' ? toRadians(value) : value);
+                    }
+                    break;
+                case 'cos':
+                    if (isHyp) {
+                        result = Math.cosh(angleMode === 'DEG' ? toRadians(value) : value);
+                    } else {
+                        result = Math.cos(angleMode === 'DEG' ? toRadians(value) : value);
+                    }
+                    break;
+                case 'tan':
+                    if (isHyp) {
+                        result = Math.tanh(angleMode === 'DEG' ? toRadians(value) : value);
+                    } else {
+                        result = Math.tan(angleMode === 'DEG' ? toRadians(value) : value);
+                    }
+                    break;
+                case 'asin':
+                    result = angleMode === 'DEG' ? Math.asin(value) * (180 / Math.PI) : Math.asin(value);
+                    break;
+                case 'acos':
+                    result = angleMode === 'DEG' ? Math.acos(value) * (180 / Math.PI) : Math.acos(value);
+                    break;
+                case 'atan':
+                    result = angleMode === 'DEG' ? Math.atan(value) * (180 / Math.PI) : Math.atan(value);
+                    break;
+                case 'eng':
+                    result = value.toExponential();
+                    break;
+                case 'sSum':
+                    if (dataSet.length === 0) {
+                        dataSet.push(value);
+                        result = 'Data added';
+                    } else {
+                        result = dataSet.reduce((a, b) => a + b, 0);
+                    }
+                    break;
+                case 'sVar':
+                    if (dataSet.length === 0) {
+                        dataSet.push(value);
+                        result = 'Data added';
+                    } else {
+                        let mean = dataSet.reduce((a, b) => a + b, 0) / dataSet.length;
+                        result = mean;
+                    }
+                    break;
+                case 'rnd':
+                    result = Math.round(value);
+                    break;
+                case 'ran':
+                    result = Math.random();
+                    break;
+                case 'percent':
+                    result = value / 100;
+                    break;
+                default:
+                    result = value;
+            }
+
+            display.innerText = result.toFixed(3);
+            currentExpression = result.toString();
+            lastResult = result;
+            isHyp = false;
+        }
+
+        function factorial(n) {
+            if (n < 0 || !Number.isInteger(n)) return 'Error';
+            if (n === 0) return 1;
+            return n * factorial(n - 1);
+        }
+
+        function permutation(n, r) {
+            if (n < r || n < 0 || r < 0) return 'Error';
+            return factorial(n) / factorial(n - r);
+        }
+
+        function combination(n, r) {
+            if (n < r || n < 0 || r < 0) return 'Error';
+            return factorial(n) / (factorial(r) * factorial(n - r));
+        }
+
+        function toPolar(x, y) {
+            let r = Math.sqrt(x * x + y * y);
+            let theta = Math.atan2(y, x) * (180 / Math.PI);
+            return { r: r.toFixed(2), theta: theta.toFixed(2) };
+        }
+
+        function toRectangular(r, theta) {
+            let rad = angleMode === 'DEG' ? theta * (Math.PI / 180) : theta;
+            let x = r * Math.cos(rad);
+            let y = r * Math.sin(rad);
+            return { x: x.toFixed(2), y: y.toFixed(2) };
+        }
+
+        function storeVariable() {
+            if (isAlpha) {
+                display.innerText = 'Variables Removed';
+                setTimeout(() => { display.innerText = currentExpression || '0'; }, 1000);
+            }
+        }
+
+        function recallVariable() {
+            if (isAlpha) {
+                display.innerText = 'Variables Removed';
+                setTimeout(() => { display.innerText = currentExpression || '0'; }, 1000);
+            }
+        }
+
+        function memoryAdd() {
+            let value = eval(currentExpression.replace(/×/g, '*').replace(/÷/g, '/').replace(/√/g, 'Math.sqrt'));
+            memory += value || 0;
+            display.innerText = `M = ${memory}`;
+            setTimeout(() => { display.innerText = currentExpression || '0'; }, 1000);
+        }
+
+        function memorySubtract() {
+            let value = eval(currentExpression.replace(/×/g, '*').replace(/÷/g, '/').replace(/√/g, 'Math.sqrt'));
+            memory -= value || 0;
+            display.innerText = `M = ${memory}`;
+            setTimeout(() => { display.innerText = currentExpression || '0'; }, 1000);
+        }
+
+        function calculate() {
+            try {
+                let expression = currentExpression
+                    .replace(/×/g, '*')
+                    .replace(/÷/g, '/')
+                    .replace(/E/g, 'e')
+                    .replace(/√/g, 'Math.sqrt')
+                    .replace(/Ans/g, lastResult);
+                let result = eval(expression);
+                if (isNaN(result) || !isFinite(result)) throw new Error('Invalid result');
+                display.innerText = result.toFixed(3);
+                currentExpression = result.toString();
+                lastResult = result;
+            } catch (error) {
+                display.innerText = 'Error';
+                currentExpression = '';
+            }
+        }
+    </script>
+</body>
+              </html>
